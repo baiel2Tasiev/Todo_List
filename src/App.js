@@ -1,39 +1,39 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addTodo, removeTodo, toggleTodo, editTodo, toggleImportant } from './todos/todoSlice';
-import './index.css'
+import './index.css';
 
-function App() {
-  const [text, setText] = useState('');
-  const [editId, setEditId] = useState(null);
-  const [editText, setEditText] = useState('');
-  const todos = useSelector(state => state.todos.todos);
+const App = () => {
+  const [taskText, setTaskText] = useState('');
+  const [currentEditId, setCurrentEditId] = useState(null);
+  const [newEditText, setNewEditText] = useState('');
+  const todoList = useSelector(state => state.todos.todos);
   const dispatch = useDispatch();
 
-  const handleAddTodo = () => {
-    if (text.trim()) {
-      dispatch(addTodo(text));
-      setText('');
+  const addNewTask = () => {
+    if (taskText.trim()) {
+      dispatch(addTodo(taskText));
+      setTaskText('');
     }
   };
 
-  const handleRemoveTodo = id => {
+  const removeTask = (id) => {
     dispatch(removeTodo(id));
   };
 
-  const handleToggleTodo = id => {
+  const toggleTaskCompletion = (id) => {
     dispatch(toggleTodo(id));
   };
 
-  const handleEditTodo = () => {
-    if (editText.trim()) {
-      dispatch(editTodo({ id: editId, text: editText }));
-      setEditId(null);
-      setEditText('');
+  const saveTaskEdit = () => {
+    if (newEditText.trim()) {
+      dispatch(editTodo({ id: currentEditId, text: newEditText }));
+      setCurrentEditId(null);
+      setNewEditText('');
     }
   };
 
-  const handleToggleImportant = id => {
+  const markAsImportant = (id) => {
     dispatch(toggleImportant(id));
   };
 
@@ -42,58 +42,54 @@ function App() {
       <h1>NOTES</h1>
       <input
         type="text"
-        value={text}
-        onChange={e => setText(e.target.value)}
+        value={taskText}
+        onChange={e => setTaskText(e.target.value)}
         placeholder="введите ваши задачи"
       />
-      <button onClick={handleAddTodo} className='click'>Add</button>
+      <button onClick={addNewTask} className='click'>Add</button>
 
       <ul style={{ listStyleType: 'none', padding: 0 }}>
-        {todos.map(todo => (
+        {todoList.map(todo => (
           <li key={todo.id} style={{ color: todo.important ? 'blue' : 'black', marginBottom: '10px' }}>
-
-<input type="checkbox"
-                onChange={() =>{
-                }} 
-                />
-
-              
+            <input 
+              type="checkbox"
+              onChange={() => {}}
+            />
             <span
-               style={{ textDecoration: todo.completed ? 'line-through' : 'none', marginRight: '10px' }}
-               onClick={() => handleToggleTodo(todo.id)}
-             >
-            
+              style={{ textDecoration: todo.completed ? 'line-through' : 'none', marginRight: '10px' }}
+              onClick={() => toggleTaskCompletion(todo.id)}
+            >
               {todo.text}
             </span>
-            <button onClick={() => handleRemoveTodo(todo.id)}>удалить</button>
-            <button onClick={() => { setEditId(todo.id); setEditText(todo.text); }}>изменить</button>
-            <button  
-              onClick={() => handleToggleImportant(todo.id)}
+            <button onClick={() => removeTask(todo.id)}>удалить</button>
+            <button onClick={() => { setCurrentEditId(todo.id); setNewEditText(todo.text); }}>изменить</button>
+            <button
+              onClick={() => markAsImportant(todo.id)}
               style={{
                 backgroundColor: 'transparent',
                 cursor: 'pointer',
                 marginLeft: '10px',
-                
               }}
-            >избранные
-              </button>
+            >
+              избранные
+            </button>
           </li>
         ))}
       </ul>
 
-      {editId !== null && (
+      {currentEditId !== null && (
         <div>
           <input
             type="text"
-            value={editText}
-            onChange={e => setEditText(e.target.value)}
+            value={newEditText}
+            onChange={e => setNewEditText(e.target.value)}
           />
-          <button onClick={handleEditTodo}>сохранить</button>
-          <button onClick={() => setEditId(null)}>удалить</button>
+          <button onClick={saveTaskEdit}>сохранить</button>
+          <button onClick={() => setCurrentEditId(null)}>отмена</button>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default App;
